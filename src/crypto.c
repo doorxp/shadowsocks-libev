@@ -103,8 +103,8 @@ crypto_md5(const unsigned char *d, size_t n, unsigned char *md)
     if (md == NULL) {
         md = m;
     }
-#if MBEDTLS_VERSION_NUMBER >= 0x02070000
-    if (mbedtls_md5_ret(d, n, md) != 0)
+#if MBEDTLS_VERSION_NUMBER >= 0x02070000 && MBEDTLS_VERSION_NUMBER < 0x03020100
+		if (mbedtls_md5_ret(d, n, md) != 0)
         FATAL("Failed to calculate MD5");
 #else
     mbedtls_md5(d, n, md);
