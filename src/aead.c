@@ -738,9 +738,9 @@ aead_key_init(int method, const char *pass, const char *key)
         cipher->info->key_bitlen = supported_aead_ciphers_key_size[method] * 8;
         cipher->info->iv_size    = supported_aead_ciphers_nonce_size[method];
 #else
-				cipher->info->private_base = NULL;
-				cipher->info->private_key_bitlen = supported_aead_ciphers_key_size[method] * 8;
-				cipher->info->private_iv_size = supported_aead_ciphers_nonce_size[method];
+				cipher->info->MBEDTLS_PRIVATE(base) = NULL;
+				cipher->info->MBEDTLS_PRIVATE(key_bitlen) = supported_aead_ciphers_key_size[method] * 8;
+				cipher->info->MBEDTLS_PRIVATE(iv_size) = supported_aead_ciphers_nonce_size[method];
 #endif
     } else {
         cipher->info = (cipher_kt_t *)aead_get_cipher_type(method);

@@ -174,7 +174,11 @@ cipher_nonce_size(const cipher_t *cipher)
     if (cipher == NULL) {
         return 0;
     }
+#if MBEDTLS_VERSION_NUMBER < 0x03020100
     return cipher->info->iv_size;
+#else
+		return mbedtls_cipher_info_get_iv_size(cipher->info);
+#endif
 }
 
 int
@@ -192,7 +196,11 @@ cipher_key_size(const cipher_t *cipher)
         return 0;
     }
     /* From Version 1.2.7 released 2013-04-13 Default Blowfish keysize is now 128-bits */
-    return cipher->info->key_bitlen / 8;
+#if MBEDTLS_VERSION_NUMBER < 0x03020100
+		return cipher->info->key_bitlen / 8;
+#else
+		return mbedtls_cipher_info_get_key_bitlen(cipher->info) / 8;
+#endif
 }
 
 const cipher_kt_t *
@@ -645,9 +653,15 @@ stream_key_init(int method, const char *pass, const char *key)
     if (method == SALSA20 || method == CHACHA20 || method == CHACHA20IETF) {
         cipher_kt_t *cipher_info = (cipher_kt_t *)ss_malloc(sizeof(cipher_kt_t));
         cipher->info             = cipher_info;
-        cipher->info->base       = NULL;
+#if MBEDTLS_VERSION_NUMBER < 0x03020100
+				cipher->info->base       = NULL;
         cipher->info->key_bitlen = supported_stream_ciphers_key_size[method] * 8;
         cipher->info->iv_size    = supported_stream_ciphers_nonce_size[method];
+#else
+				cipher->info->MBEDTLS_PRIVATE(base) = NULL;
+				cipher->info->MBEDTLS_PRIVATE(key_bitlen) = supported_stream_ciphers_key_size[method] * 8;
+				cipher->info->MBEDTLS_PRIVATE(iv_size) = supported_stream_ciphers_nonce_size[method];
+#endif
     } else {
         cipher->info = (cipher_kt_t *)stream_get_cipher_type(method);
     }
